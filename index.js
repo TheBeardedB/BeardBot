@@ -10,19 +10,8 @@ const {token} = require('./config/secrets.json');
 // create a client to allow the bot to log in
 const client = new Discord.Client();
 
-function getUserFromMention(mention) {
-	if (!mention) return;
-
-	if (mention.startsWith('<@') && mention.endsWith('>')) {
-		mention = mention.slice(2, -1);
-
-		if (mention.startsWith('!')) {
-			mention = mention.slice(1);
-		}
-
-		return client.users.cache.get(mention);
-	}
-}
+// create the cooldown collection
+const cooldowns = new Discord.Collection();
 
 // These are start-up tasks, this code runs one time
 // the event triggers once the bot is logged in
@@ -59,15 +48,53 @@ client.on('message', message => {
     if(!message.content.startsWith(config.prefix) || message.author.bot ) return;
 
     const args = message.content.slice(config.prefix.length).split(/ +/);
-    const command = args.shift().toLowerCase();
+    const commandName = args.shift().toLowerCase();
 
-    if(!client.commands.has(command)) {
-        message.reply(`No command matches ${command}`); 
+    if(!client.commands.has(commandName)) {
+        message.reply(`No command matches ${commandName}`); 
         return;
     }
+    const command = client.commands.get(commandName)
+        || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
+    if(command.args && !args.length)
+    {
+        let reply = `${commandName} requires arguments and none were provided`;
+
+        if(command.usage)
+        {
+            reply += `\nTry: ${config.prefix}${commandName} ${command.usage}`;
+        }
+        if(command.example)
+        {
+            reply += `\nAs shown in the following example:\n${command.example}`;
+        }
+
+        return message.reply(reply);
+    }
+    
+    if (!cooldowns.has(command.name)) {
+        cooldowns.set(command.name, new Discord.Collection());
+    }
+    
+    const now = Date.now();
+    const timestamps = cooldowns.get(command.name);
+    const cooldownAmount = (command.cooldown || 3) * 1000;
+    
+    if (timestamps.has(message.author.id)) {
+        const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+
+        if (now < expirationTime) {
+            const timeLeft = (expirationTime - now) / 1000;
+            return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
+        }
+    }
+    else{
+        timestamps.set(message.author.id, now);
+        setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+    }    
     try {
-        client.commands.get(command).execute(message, args);        
+        command.execute(message, args);        
     } catch (error) {
         console.error(error);
         message.reply(`Error executing ${command}, please check the arguments and try again`);

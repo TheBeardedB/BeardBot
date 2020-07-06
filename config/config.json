@@ -1,3 +1,4 @@
 {
-    "prefix": "~"
+    "prefix": "~",
+    "invite": "https://discordapp.com/oauth2/authorize?client_id=728824868879073290&scope=bot&permissions=469855414"
 }
