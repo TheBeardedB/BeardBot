@@ -8,9 +8,10 @@ module.exports = {
     args: false,
     execute(message,args) {
         const embed = new MessageEmbed()
-            .setTitle('Get BeardBot in your server!')
+            .setTitle(`Get ${config.botName} in your server!`)
             .setColor(0xa53311)
-            .setDescription(config.invite);
+            .setDescription(config.description)
+            .setURL(config.invite);
 
         message.channel.send(embed);
     }
