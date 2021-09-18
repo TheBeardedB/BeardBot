@@ -1,6 +1,23 @@
 {
-    "prefix": "~",
-    "botName": "BeardBot",
-    "invite": "https://discordapp.com/oauth2/authorize?client_id=728824868879073290&scope=bot&permissions=469855414",
-    "description": "BeardBot is a server management bot whose goal is to simplify the setup and management of your discord server."
+  "development": {
+    "username": "postgres",
+    "password": "postgresAdmin",
+    "database": "beardbot_dev",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "beardbot_test",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "beardbot_prod",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
 }

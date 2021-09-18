@@ -6,6 +6,7 @@ module.exports = {
     cooldown: 5, //Time in seconds before this command can be executed by the same user again    
     example: 'An example showing how the command might be used',
     usage: 'descriptive description of the arguments for the command',
+    aliases: ['sample', 'alias'],
     execute(message,args){
         message.reply('This command has no purpose how did you get here?');
     }

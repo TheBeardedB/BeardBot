@@ -1,0 +1,6 @@
+{
+    "prefix": "~",
+    "botName": "BeardBot",
+    "invite": "https://discordapp.com/oauth2/authorize?client_id=728824868879073290&scope=bot&permissions=469855414",
+    "description": "BeardBot is a server management bot whose goal is to simplify the setup and management of your discord server."
+}

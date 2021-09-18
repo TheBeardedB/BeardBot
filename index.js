@@ -4,8 +4,15 @@ const Discord = require('discord.js');
 
 // import the configuration for the bot
 // NOTE: Someday we want parts of this to be 
-const config = require('./config/config.json');
-const {token} = require('./config/secrets.json');
+const bot_config = require('./config/bot.json');
+let secrets;
+try{
+    secrets = require('./config/secrets.json');
+}catch (error)
+{
+    //Do nothing we don't care
+}
+const token = process.env.TOKEN ? process.env.TOKEN : secrets.token;
 
 // create a client to allow the bot to log in
 const client = new Discord.Client();
@@ -45,17 +52,18 @@ client.login(token);
 client.on('message', message => {
     console.log(message.content);
     // If the message doesn't start with our prefix or is from a bot then ignore it
-    if(!message.content.startsWith(config.prefix) || message.author.bot ) return;
+    if(!message.content.startsWith(bot_config.prefix) || message.author.bot ) return;
 
-    const args = message.content.slice(config.prefix.length).split(/ +/);
+    const args = message.content.slice(bot_config.prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    if(!client.commands.has(commandName)) {
+    const command = client.commands.get(commandName)
+        || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
+    if(!command) {
         message.reply(`No command matches ${commandName}`); 
         return;
     }
-    const command = client.commands.get(commandName)
-        || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
     if(command.args && !args.length)
     {
@@ -100,3 +108,12 @@ client.on('message', message => {
         message.reply(`Error executing ${command}, please check the arguments and try again`);
     }
 });
+
+client.on('guildCreate', ( guild ) => {
+    // Do the things you need to do
+    // I think I am going to make this a module
+})
+
+client.on('presenceUpdate', (oldUser, newUser) => {
+    console.debug("Received Presence update event");
+})
