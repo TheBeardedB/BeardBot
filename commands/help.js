@@ -30,8 +30,8 @@ module.exports = {
                 return message.reply('that\'s not a valid command!');
             }
 
-            data.push(`**Name:** ${command.name}`);
-
+            embed.setTitle(command.name);
+            if (command.permission) data.push(`**Permissions:** ${command.permission.join(', ')}`);
             if (command.aliases) data.push(`**Aliases:** ${command.aliases.join(', ')}`);
             if (command.description) data.push(`**Description:** ${command.description}`);
             if (command.usage) data.push(`**Usage:** ${prefix}${command.name} ${command.usage}`);
